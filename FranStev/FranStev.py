@@ -8,9 +8,68 @@ vec = pygame.math.Vector2
 
 WIDTH = 1280
 HEIGHT = 900
-ACC = 0.5
+ACC = 1
 FPS = 50
 FRIC = -0.12
+
+
+FramePerSec = pygame.time.Clock()
+displaysurface = pygame.display.set_mode((WIDTH,HEIGHT))
+bg = pygame.image.load("Scene1.png")
+pygame.display.set_caption('Franco and Steven')
+
+game_font = pygame.font.SysFont('Verdana', 60)
+text_surface = game_font.render('Success!', True, (0,0,0))
+text_surface_2 = game_font.render('Defeat!', True, (0,0,0))
+text_surface_3 = game_font.render('Start', True, (0,0,0))
+text_rect  = text_surface.get_rect(center = (225, 200))
+
+color = (255,255,255) 
+  
+
+color_light = (170,170,170) 
+color_dark = (100,100,100) 
+
+smallfont = pygame.font.SysFont('Corbel',35) 
+  
+text = smallfont.render('quit' , True , color) 
+text_2 = smallfont.render('start', True, color)
+text_3 = smallfont.render('credits', True, color)
+
+while True: 
+      
+    for event in pygame.event.get(): 
+          
+        if event.type == pygame.QUIT: 
+            pygame.quit()
+        if event.type == pygame.MOUSEBUTTONDOWN: 
+            if WIDTH/2 <= mouse[0] <= WIDTH/2+140 and HEIGHT/2 <= mouse[1] <= HEIGHT/2+40: 
+                pygame.quit()
+
+                  
+    # fills the screen with a color 
+    displaysurface.fill((60,25,60)) 
+      
+    # stores the (x,y) coordinates into 
+    # the variable as a tuple 
+    mouse = pygame.mouse.get_pos() 
+      
+    # if mouse is hovered on a button it 
+    # changes to lighter shade 
+    if WIDTH/2 <= mouse[0] <= WIDTH/2+140 and HEIGHT/2 <= mouse[1] <= HEIGHT/2+40: 
+        pygame.draw.rect(displaysurface,color_light,[WIDTH/2,HEIGHT/2,140,40]) 
+          
+    else: 
+        pygame.draw.rect(displaysurface,color_dark,[WIDTH/2,HEIGHT/2,140,40]) 
+      
+    # superimposing the text onto our button 
+    displaysurface.blit(text , (WIDTH/2+50,HEIGHT/2)) 
+      
+    # updates the frames of the game 
+    pygame.display.update() 
+
+
+
 #-----------------------Music
 
 #def gameMusic():
@@ -31,27 +90,17 @@ FRIC = -0.12
 #game = False
 #credits = False
 
-
-
-
 #-----------------------
-
-FramePerSec = pygame.time.Clock()
-displaysurface = pygame.display.set_mode((WIDTH,HEIGHT))
-pygame.display.set_caption('Franco and Steven')
-
-game_font = pygame.font.SysFont('Verdana', 60)
-text_surface = game_font.render('Success!', True, (0,0,0))
-text_surface_2 = game_font.render('Defeat!', True, (0,0,0))
-text_rect  = text_surface.get_rect(center = (225, 200))
-
 
 class Player1(pygame.sprite.Sprite):
     def __init__(self):
         super(Player1, self).__init__()
         self.surf = pygame.Surface((40, 40))
-        self.surf = pygame.image.load('T0.png')
-        self.rect = self.surf.get_rect(center = (10, 420))
+        self.surf = pygame.image.load('F1.png')
+        selfwalkRight = [pygame.image.load('F1.png')]
+        selfjumpRight = [pygame.image.load('F2.png')]
+
+        self.rect = self.surf.get_rect(center = (10000, 500))
         
         self.pos = vec((10, 385))
         self.vel = vec(0,0)
@@ -108,75 +157,12 @@ class Player1(pygame.sprite.Sprite):
             if self.vel.y < -3:
                 self.vel.y = -3
 
-class Player2(pygame.sprite.Sprite):
-    def __init__(self):
-        super(Player2, self).__init__()
-        self.surf = pygame.Surface((40, 40))
-        self.surf = pygame.image.load('F0.png').convert()
-        self.rect = self.surf.get_rect(center = (10, 420))
-        
-        self.pos = vec((5, 385))
-        self.vel = vec(0,0)
-        self.acc = vec(0,0)
-        self.jumping = False
-        self.score = 0
-
-    def move(self):
-        self.acc = vec(0, 0.5)
-
-        pressed_keys = pygame.key.get_pressed()
-        if pressed_keys[K_d]:
-            self.acc.x = -ACC
-        if pressed_keys[K_a]:
-            self.acc.x = ACC
-        self.acc.x += self.vel.x * FRIC
-        self.vel += self.acc
-        self.pos += self.vel + 0.5 * self.acc
-
-        if self.pos.x > WIDTH:
-            self.pos.x = 0
-        if self.pos.x < 0:
-            self.pos.x = WIDTH
-
-        self.rect.midbottom = self.pos
-
-    def update(self):
-        hits = pygame.sprite.spritecollide(P1, platforms, False)
-        if self.vel.y > 0:
-            if hits:
-                if self.pos.y < hits[0].rect.bottom:
-                    if hits[0].point == True:
-                        hits[0].point = False
-                        self.score += 1
-                        if self.score == 5:
-                            displaysurface.fill((0, 255, 0))
-                            displaysurface.blit(text_surface, text_rect)
-                            pygame.display.update()
-                            time.sleep(2)
-                            pygame.quit()
-                            sys.exit()
-                    self.pos.y = hits[0].rect.top +1
-                    self.vel.y = 0
-                    self.jumping = False
-    
-    def jump(self):
-        hits = pygame.sprite.spritecollide(self, platforms, False)
-        if hits and not self.jumping:
-            self.jumping = True
-            self.vel.y = -15
-
-    def cancel_jump(self):
-        if self.jumping:
-            if self.vel.y < -3:
-                self.vel.y = -3
-
-
 
 class platform(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.surf = pygame.Surface((random.randint(50,100), 12))
-        self.surf.fill((32, 45, 100))
+        self.surf = pygame.Surface((random.randint(150, 400), 40))
+        self.surf.fill((34, 128, 31))
         self.rect = self.surf.get_rect(center = (random.randint(0,WIDTH -10), random.randint(0, HEIGHT -30)))
         self.speed = random.randint(-1, 1)
         self.moving = True
@@ -229,12 +215,11 @@ PT1 = platform()
 PT1.moving = False
 PT1.point = False
 P1 = Player1()
-P2 = Player2()
 platforms = pygame.sprite.Group()
 platforms.add(PT1)
 
-PT1.surf = pygame.Surface((WIDTH, 20))
-PT1.surf.fill((146, 179, 232))
+PT1.surf = pygame.Surface((WIDTH, HEIGHT - 800)) 
+PT1.surf.fill((27, 59, 26))
 PT1.rect = PT1.surf.get_rect(center = (WIDTH/2, HEIGHT - 10))
 
 all_sprites = pygame.sprite.Group()
@@ -253,7 +238,7 @@ while True:
             sys.exit()
         if event.type ==  pygame.KEYDOWN:
             if event.key == pygame.K_SPACE or pygame.K_w:
-                P1.jump or P2.jump()
+                P1.jump()
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_SPACE:
                 P1.cancel_jump() ##no longer jumping at all
@@ -268,7 +253,7 @@ while True:
             time.sleep(2)
             pygame.quit()
             sys.exit
-
+             
     displaysurface.fill((0, 0, 0))
     f = pygame.font.SysFont("Verdana", 20)
     g = f.render(str(P1.score), True, (123, 255, 0))
