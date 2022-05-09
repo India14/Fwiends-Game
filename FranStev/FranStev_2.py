@@ -17,6 +17,9 @@ FPS = 60
  
 FramePerSec = pygame.time.Clock()
  
+ 
+plat1 = pygame.image.load('plat1.png')
+plat2 = pygame.image.load('plat2.png')
 displaysurface = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Forest Fwiends")
 gameIcon = pygame.image.load('mushy.png')
