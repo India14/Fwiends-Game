@@ -17,9 +17,6 @@ FPS = 60
  
 FramePerSec = pygame.time.Clock()
  
- 
-plat1 = pygame.image.load('plat1.png')
-plat2 = pygame.image.load('plat2.png')
 displaysurface = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Forest Fwiends")
 gameIcon = pygame.image.load('mushy.png')
@@ -29,18 +26,51 @@ WIDTH = 700
 HEIGHT = 1000
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-game_font = pygame.font.SysFont('Verdana', 60)
+game_font = pygame.font.SysFont('Verdana', 20)
 text_surface = game_font.render('You Won!', True, (0, 0, 0))
 text_surface_2 = game_font.render('You Lost!', True, (0, 0, 0))
-text_rect = text_surface.get_rect(center =(225, 200))
+text_surface_3 = game_font.render('Created by Ty, India and Andie \n Forest Friends 2022', True, (0, 0, 0))
+text_rect = text_surface.get_rect(center =(100, 200))
 
-start_button = pygame.image.load('start.png')
+start_button = pygame.image.load('star.png')
 s_button_rect = start_button.get_rect(center = (WIDTH/2, 150))
 quit_button = pygame.image.load('quit.png')
 q_button_rect = quit_button.get_rect(center = (WIDTH/2, 300))
+creds_button = pygame.image.load('creds.png')
+c_button_rect = creds_button.get_rect(center = (WIDTH/2, 450))
+b_button = pygame.image.load ('back.png')
+b_button_rect = b_button.get_rect(center = (WIDTH/2, 700))
+#-----------------------Music
+def gameMusic():
+    gMusic = pygame.mixer.music.load("game music.mp3")
+    pygame.mixer.music.play()
+
+def creditsMusic():
+    cMusic = pygame.mixer.music.load("credit music.mp3")
+    pygame.mixer.music.play()
+
+def deathMusic():
+    cMusic = pygame.mixer.music.load("death music.mp3")
+    pygame.mixer.music.play()
+
+def winMusic():
+    cMusic = pygame.mixer.music.load("win music.mp3")
+    pygame.mixer.music.play()
+    
+    
+#system = True
+#mainMenu = True
+#game = False
+#credits = False
+
+
+
+
+#-----------------------
 
 def menu_screen():
     while True:
+        creditsMusic()
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
@@ -51,11 +81,22 @@ def menu_screen():
                 if q_button_rect.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit
+                #if c_button_rect.collidepoint(event.pos):
+                    #displaysurface.fill((3, 244, 252))
+                    #displaysurface.blit(text_surface_3, text_rect)
+                    #displaysurface.blit(b_button, b_button_rect)
+                    #pygame.display.update()
+                    #if event.type == MOUSEBUTTONDOWN:
+                        #if b_button_rect.collidepoint(event.pos):
+                            #menu_screen()  
 
         displaysurface.fill((134,56,200))
         displaysurface.blit(start_button, s_button_rect)
         displaysurface.blit(quit_button, q_button_rect)
+        #displaysurface.blit(creds_button, c_button_rect)
         pygame.display.update()
+
+
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -118,7 +159,8 @@ class Player(pygame.sprite.Sprite):
                     if hits[0].point == True:   
                         hits[0].point = False   
                         self.score += 1
-                        if self.score == 10:
+                        if self.score == 20:
+                            winMusic()
                             displaysurface.fill((0, 255, 0))
                             displaysurface.blit(text_surface, text_rect)
                             pygame.display.update()
@@ -128,90 +170,16 @@ class Player(pygame.sprite.Sprite):
                     self.pos.y = hits[0].rect.top +1
                     self.vel.y = 0
                     self.jumping = False
-
-
-class Player2(pygame.sprite.Sprite):
-    def __init__(self2):
-        super().__init__() 
-        self2.surf = pygame.image.load("S12.png")
-        self2.walkRight = pygame.image.load('S12.png')
-        self2.walkLeft = pygame.image.load('S02.png')
-        self2.rect = self2.surf.get_rect()
-        self2.pos = vec((10, 360))
-        self2.vel = vec(0,0)
-        self2.acc = vec(0,0)
-        self2.jumping = False
-        self2.score = 0 
-        self2.index = 1
- 
-    def move(self2):
-        self2.acc = vec(0,0.5)
-    
-        pressed_keys2 = pygame.key.get_pressed()
-                
-        if pressed_keys2[K_a]:
-            self2.acc.x = -ACC
-            self2.surf = self2.walkLeft
-            self2.index += 1
-            if self2.index > 8:
-                self2.index = 0 
-        if pressed_keys2[K_d]:
-            self2.acc.x = ACC
-            self2.surf = self2.walkRight
-            self2.index += 1
-            if self2.index > 8:
-                self2.index = 0 
-        self2.acc.x += self2.vel.x * FRIC
-        self2.vel += self2.acc
-        self2.pos += self2.vel + 0.5 * self2.acc
-        
-        if self2.pos.x > WIDTH:
-            self2.pos.x = 0
-        if self2.pos.x < 0:
-            self2.pos.x = WIDTH
-             
-        self2.rect.midbottom = self2.pos
- 
-    def jump(self2): 
-        hits = pygame.sprite.spritecollide(self2, platforms, False)
-        if hits and not self2.jumping:
-           self2.jumping = True
-           self2.vel.y = -20 * jumpy
- 
-    def cancel_jump(self2):
-        if self2.jumping:
-            if self2.vel.y < -3:
-                self2.vel.y = -3
- 
-    def update(self2):
-        hits = pygame.sprite.spritecollide(P2 ,platforms, False)
-        if self2.vel.y > 0:        
-            if hits:
-                if self2.pos.y < hits[0].rect.bottom:
-                    if hits[0].point == True:   
-                        hits[0].point = False   
-                        self2.score += 1
-                        if self2.score == 10:
-                            displaysurface.fill((0, 255, 0))
-                            displaysurface.blit(text_surface, text_rect)
-                            pygame.display.update()
-                            time.sleep(2)
-                            pygame.quit()
-                            sys.exit
-                    self2.pos.y = hits[0].rect.top +1
-                    self2.vel.y = 0
-                    self2.jumping = False
  
 class platform(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.surf = pygame.Surface((random.randint(50,100), 12))
         self.surf.fill((151,182,159))
-        self.rect = self.surf.get_rect(center = (random.randint(0,WIDTH-10),
-                                                 random.randint(0, HEIGHT-30)))
+        self.rect = self.surf.get_rect(center = (random.randint(0,WIDTH-10),  random.randint(0, HEIGHT-30)))
         self.speed = random.randint(-1, 2)
         
-        self.point = True   
+        self.point = True  
         self.moving = True
         
     
@@ -260,7 +228,7 @@ class powerUp():
 
     def powerUpSpawn(self):
         displaysurface.blit(self.image, self.rect)
-        # pygame.draw.rect(displaysurface, self.rect, 4)
+        #pygame.draw.rect(displaysurface, self.rect, 4)
 
     def changePLaces(self):
         self.rect.x = random.randint(0,370)
@@ -272,14 +240,13 @@ class powerUp():
 powers = powerUp()
 PT1 = platform()
 P1 = Player()
-P2 = Player2()
 PT1.surf = pygame.Surface((WIDTH, 20))
 PT1.surf.fill((213,233,218))
 PT1.rect = PT1.surf.get_rect(center = (WIDTH/2, HEIGHT - 10))
  
 all_sprites = pygame.sprite.Group()
 all_sprites.add(PT1)
-all_sprites.add(P1 and P2)
+all_sprites.add(P1)
 
 platforms = pygame.sprite.Group()
 platforms.add(PT1)
@@ -300,7 +267,6 @@ for x in range(random.randint(4,5)):
 def plat_game():
     while True:
         P1.update()
-        P2.update()
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
@@ -309,24 +275,20 @@ def plat_game():
                 if event.key == pygame.K_SPACE:
                     P1.jump()
                     #jumpy = 1
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_w:
-                    P2.jump()
             if event.type == pygame.KEYUP:    
                 if event.key == pygame.K_SPACE:
                     P1.cancel_jump()
-            if event.type == KEYUP:
-                if event.key == pygame.K_w:
-                    P2.cancel_jump()
 
 
-        if P1.rect.top > HEIGHT or P2.rect.top > HEIGHT:
+        if P1.rect.top > HEIGHT:
             for entity in all_sprites:
+                deathMusic()
                 entity.kill()
                 time.sleep(1)
                 displaysurface.fill((255,0,0))
+                displaysurface.blit(text_surface_2, text_rect)
                 pygame.display.update()
-                time.sleep(1)
+                time.sleep(3)
                 pygame.quit()
                 sys.exit()
     
@@ -349,7 +311,7 @@ def plat_game():
             powers.changePLaces()
             P1.score += 2
             
-        if P1.rect.top <= HEIGHT/3 or P2.rect.top <= HEIGHT/3:
+        if P1.rect.top <= HEIGHT/3:
             powers.scroll()
 
         if powers.rect.y > 900:  #THIS IS THE SPAWN RATE
